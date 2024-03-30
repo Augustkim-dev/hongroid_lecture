@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_store_pick_app/screen/login_screen.dart';
+import 'package:flutter_store_pick_app/screen/main_screen.dart';
 import 'package:flutter_store_pick_app/screen/register_screen.dart';
 import 'package:flutter_store_pick_app/screen/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/main': (context) => MainScreen(),
       },
     );
   }
