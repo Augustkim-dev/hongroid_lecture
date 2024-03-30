@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_store_pick_app/widget/buttons.dart';
-import 'package:flutter_store_pick_app/widget/texts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

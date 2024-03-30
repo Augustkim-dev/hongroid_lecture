@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   supabase_flutter: ^2.3.4
   image_picker: ^1.0.7
-  flutter_naver_map: ^1.2.1
+  flutter_naver_map: ^1.1.2
   geolocator: ^11.0.0
   http: ^1.2.1
   daum_postcode_search: ^0.0.2
