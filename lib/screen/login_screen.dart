@@ -93,8 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return;
                       }
 
-                      bool isLoginSuccess =
-                          await loginWithEmail(emailValue, passwordValue);
+                      bool isLoginSuccess = await loginWithEmail(emailValue, passwordValue);
 
                       if (!context.mounted) return;
                       if (!isLoginSuccess) {
@@ -151,12 +150,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<bool> loginWithEmail(String emailValue, String passwordValue) async {
     // 이메일 로그인 (수파베이스)
     bool isLoginSuccess = false;
-    final AuthResponse response = await supabase.auth
-        .signInWithPassword(email: emailValue, password: passwordValue);
-    if (response.user! != null) {
-      isLoginSuccess = true;
-    } else {
+    AuthResponse response = AuthResponse();
+
+    try {
+      response = await Supabase.instance.client.auth.signInWithPassword(
+        email: emailValue,
+        password: passwordValue,
+      );
+    } on AuthException catch (error) {
+      showSnackBar(context, '인증실패 : ${error.message}');
+    } on Exception catch (e) {
+      showSnackBar(context, '기타에러 : ${e.toString()}');
+    }
+
+    if (response == null || response.user == null) {
       isLoginSuccess = false;
+    } else {
+      isLoginSuccess = true;
     }
     return isLoginSuccess;
   }
