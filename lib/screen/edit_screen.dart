@@ -83,6 +83,7 @@ class _EditScreenState extends State<EditScreen> {
                     var result =
                         await Navigator.pushNamed(context, '/search_address');
                     if (result != null) {
+                      print('다음주소 : $result');
                       setState(() {
                         dataModel = result as DataModel?;
                         _storeAddressController.text =
