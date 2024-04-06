@@ -76,6 +76,31 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        backgroundColor: Colors.black,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 32,
+        ),
+        onPressed: () async {
+          // 작성 화면으로 이동
+          var result = await Navigator.pushNamed(context, '/edit');
+          if (result != null) {
+            if (result == 'completed_edit') {
+              // 맛집 등록을 성공적으로 하고 돌아왔을 때 이 부분이 호출
+
+              // 새롭게 추가된 맛집 정보로 갱신
+              _lstFoodStore = await fetchStoreInfo();
+              // 마커 UI들 갱신
+              _buildMarkers();
+              // UI Refresh
+              setState(() {});
+            }
+          }
+        },
+      ),
     );
   }
 
