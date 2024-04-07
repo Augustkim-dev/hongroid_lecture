@@ -368,7 +368,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         // 업로드 된 파일의 이미지 url주소를 취득
         imageUrl = supabase.storage
-            .from('food_pick')
+            .from('store_pick')
             .getPublicUrl('profiles/${response.user!.id}_$nowTime.jpg');
       }
 
