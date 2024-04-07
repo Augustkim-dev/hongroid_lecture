@@ -6,6 +6,7 @@ import 'package:flutter_store_pick_app/screen/login_screen.dart';
 import 'package:flutter_store_pick_app/screen/main_screen.dart';
 import 'package:flutter_store_pick_app/screen/register_screen.dart';
 import 'package:flutter_store_pick_app/screen/search_address_screen.dart';
+import 'package:flutter_store_pick_app/screen/search_result_screen.dart';
 import 'package:flutter_store_pick_app/screen/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -54,6 +55,17 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (context) {
                 return DetailScreen(foodStoreModel: foodStoreModel);
+              },
+            );
+          } else if (settings.name == '/search_result') {
+            // 검색 결과
+            List<FoodStoreModel> lstFoodStore =
+                settings.arguments as List<FoodStoreModel>;
+            return MaterialPageRoute(
+              builder: (context) {
+                return SearchResultScreen(
+                  lstFoodStore: lstFoodStore,
+                );
               },
             );
           }

@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_store_pick_app/model/food_store.dart';
 import 'package:flutter_store_pick_app/widget/buttons.dart';
+import 'package:flutter_store_pick_app/widget/text_fields.dart';
 import 'package:flutter_store_pick_app/widget/texts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,7 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final supabase = Supabase.instance.client;
 
   Future<List<FoodStoreModel>>? _dataFuture;
-  List<FoodStoreModel>? _lstFoodStore; // 맛집 정보들
+  List<FoodStoreModel>? _lstFoodStore;
+
+  TextEditingController _searchController = TextEditingController(); // 맛집 정보들
 
   @override
   void initState() {
@@ -52,27 +56,59 @@ class _HomeScreenState extends State<HomeScreen> {
           // 맛집 정보 리스트 데이터를 제공 받은 시점
           _lstFoodStore = snapshot.data;
 
-          return NaverMap(
-            options: const NaverMapViewOptions(
-              indoorEnable: true, // 실내 맵 사용 가능여부
-              locationButtonEnable: true, // 내 위치로 이동 버튼
-              consumeSymbolTapEvents: false, // 심볼 탭 이벤트 소비 여부
-            ),
-            onMapReady: (controller) async {
-              print('Naver Map Ready');
-              _mapController = controller;
-              // 이동 하고싶은 카메라 위치 추출 (내 위치)
-              NCameraPosition myPosition = await getMyLocation();
+          return Stack(
+            children: [
+              NaverMap(
+                options: const NaverMapViewOptions(
+                  indoorEnable: true, // 실내 맵 사용 가능여부
+                  locationButtonEnable: true, // 내 위치로 이동 버튼
+                  consumeSymbolTapEvents: false, // 심볼 탭 이벤트 소비 여부
+                ),
+                onMapReady: (controller) async {
+                  print('Naver Map Ready');
+                  _mapController = controller;
+                  // 이동 하고싶은 카메라 위치 추출 (내 위치)
+                  NCameraPosition myPosition = await getMyLocation();
 
-              // 서버에 등록된 음식점 리스트 정보들을 위경도를 가지고와서 마커 (marker) 찍기
-              _buildMarkers();
+                  // 서버에 등록된 음식점 리스트 정보들을 위경도를 가지고와서 마커 (marker) 찍기
+                  _buildMarkers();
 
-              // 추출한 위치를 카메라 update (이동)
-              _mapController
-                  .updateCamera(NCameraUpdate.fromCameraPosition(myPosition));
-              mapControllerCompleter
-                  .complete(_mapController); // 지도 컨트롤러 완료 신호 전송
-            },
+                  // 추출한 위치를 카메라 update (이동)
+                  _mapController.updateCamera(
+                      NCameraUpdate.fromCameraPosition(myPosition));
+                  mapControllerCompleter
+                      .complete(_mapController); // 지도 컨트롤러 완료 신호 전송
+                },
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 64,
+                ),
+                child: TextFormFieldCustom(
+                  isPasswordField: false,
+                  isReadOnly: false,
+                  hintText: '맛집을 검색해주세요',
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.search,
+                  validator: (value) => inputSearchValidator(value),
+                  controller: _searchController,
+                  onFieldSubmitted: (value) async {
+                    final foodListMap = await supabase
+                        .from('food_store')
+                        .select()
+                        .like('store_name', '%$value%');
+
+                    List<FoodStoreModel> lstFoodStoreSearch = foodListMap
+                        .map((e) => FoodStoreModel.fromJson(e))
+                        .toList();
+                    if (!mounted) return;
+                    Navigator.pushNamed(context, '/search_result',
+                        arguments: lstFoodStoreSearch);
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
@@ -148,6 +184,14 @@ class _HomeScreenState extends State<HomeScreen> {
         foodListMap.map((e) => FoodStoreModel.fromJson(e)).toList();
 
     return lstFoodStore;
+  }
+
+  inputSearchValidator(value) {
+    // 검색바 필드 검증 함수
+    if (value.isEmpty) {
+      return '검색어를 입력해주세요';
+    }
+    return null;
   }
 
   void _buildMarkers() {
