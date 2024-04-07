@@ -33,13 +33,11 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (bool didpop) {
-        if (didpop) {
-          // 안드로이드 지원하는 제스쳐 백, 가상 백버튼 감지
-          Navigator.pop(context, 'back_from_detail');
-          // Future.value(true);
-        }
+    return WillPopScope(
+      onWillPop: () {
+        // 안드로이드 지원하는 제스쳐 백, 가상 백버튼 감지
+        Navigator.pop(context, 'back_from_detail');
+        return Future.value(true);
       },
       child: Scaffold(
         appBar: CommonAppBar(
